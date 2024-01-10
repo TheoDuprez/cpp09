@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:03:22 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/09 17:53:19 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/01/10 13:59:21 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,4 +29,6 @@ class BitcoinExchange
 		BitcoinExchange(const BitcoinExchange& src);
 		BitcoinExchange &operator=(const BitcoinExchange& src);
 		~BitcoinExchange(void);
+
+		void	parseFile(std::ifstream& file, std::map<std::string, double> &map, void (*f)(std::string, std::map<std::string, double> &));
 };
