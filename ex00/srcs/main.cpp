@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 13:07:51 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/09 17:24:03 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/01/13 04:22:56 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,18 @@ int main(int ac, char **av)
 		return (1);
 	}
 
-	BitcoinExchange exchange((std::string(av[1])));
+	try
+	{
+		std::ifstream file(av[1]);
+		if (!file.is_open())
+			throw InvalidFileException();
+		BitcoinExchange exchange((std::string(av[1])));
+		exchange.printAmount(file);
+	}
+	catch(const std::exception& e)
+	{
+		std::cout << "Error : " << e.what() << std::endl;
+	}
 
 	return (0);
 }

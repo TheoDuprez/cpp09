@@ -6,14 +6,11 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 13:09:58 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/11 17:57:57 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/01/13 04:57:06 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/BitcoinExchange.hpp"
-
-bool	isValidDateFormat(std::string line);
-bool	isLeapYear(int year);
 
 BitcoinExchange::BitcoinExchange(void)
 {
@@ -30,14 +27,13 @@ BitcoinExchange::BitcoinExchange(std::string priceDataBase)
 		std::cout << "Error: " << priceDataBase << " is not a valid file" << std::endl;
 		exit(1);
 	}
-	parseFile(file, this->_priceDataBase, NULL);
+	// checkDataBase(file);
 	return ;
 }
 
 BitcoinExchange::BitcoinExchange(const BitcoinExchange& src)
 {
-	if (this != &src)
-		*this = src;
+	*this = src;
 	return ;
 }
 
@@ -45,7 +41,7 @@ BitcoinExchange &BitcoinExchange::operator=(const BitcoinExchange& src)
 {
 	if (this != &src)
 	{
-		
+		///////////////////////////////////////////////////////////////////////////////////////////
 	}
 	return (*this);
 }
@@ -55,58 +51,71 @@ BitcoinExchange::~BitcoinExchange(void)
 	return ;
 }
 
-void	BitcoinExchange::parseFile(std::ifstream& file, std::map<std::string, double> &map, void (*f)(std::string, std::map<std::string, double> &))
+void	BitcoinExchange::checkDataBase(std::ifstream& file)
 {
-	int posCommas;
-	int i = 1;
-	std::string line;
+	int			commasPos;
+	int			i = 1;
+	std::string	line;
+
+	
 
 	while (getline(file, line))
 	{
-		if (i == 1)
-		{
-			i++;
+		if (i++ == 1)
 			continue ;
-		}
-		if (f)
-		{
-			f(line, map);
-			posCommas = line.find('|');
-		}
-		else
-		{
-			posCommas = line.find(',');
-		}
-		if (isValidDateFormat(line.substr(0, posCommas)) == false)
-		{
-			std::cout << "Error at lign " << i << ": " << line.substr(0, posCommas) << " is not a valid date" << std::endl;
-			exit(1);
-		}
-		std::cout << line << std::endl;
-		this->_priceDataBase.insert(std::pair<std::string, double>(line.substr(0, posCommas), std::strtod(line.substr(posCommas + 1, line.size()).c_str(), NULL)));
-		i++;
+		commasPos = line.find(',');
+		if (commasPos != 10 || isValidLineFormat(line.substr(0, commasPos)) == false)
+			throw InvalidLineFormatException();
+		if (isValidDate(std::atoi(line.substr(0, 4).c_str()), std::atoi(line.substr(5, 7).c_str()), std::atoi(line.substr(8, 10).c_str())) == false)
+			throw InvalidDateException();
+		if (isValidPrice(line, commasPos) == false)
+			throw InvalidPriceException();
+		this->_btcDataBase.insert(std::pair<std::string, double>(line.substr(0, commasPos), std::strtod(line.substr(commasPos + 1, line.size()).c_str(), NULL)));
 	}
-	// this->_priceDataBase.erase(--this->_priceDataBase.end());
-	std::cout << this->_priceDataBase.rbegin()->first << std::endl;
-	parseDate(this->_priceDataBase.begin()->first);
 	return ;
 }
 
-int	countOccurences(std::string line, char c)
+void	BitcoinExchange::printAmount(std::ifstream& file)
+{
+	int			commasPos;
+	int			i = 1;
+	std::string	line;
+	std::string	formatedLine;
+
+	while (getline(file, line))
+	{
+		if (i++ == 1)
+			continue ;
+		line = line.substr(0, 10) + "|" + line.substr(13, line.length());
+		// line = line.substr(10, 11).c_str();
+		std::cout << "test = " << line << std::endl;
+		commasPos = line.find(',');
+		// if (commasPos != 10 || isValidLineFormat(line.substr(0, commasPos)) == false)
+		// 	throw InvalidLineFormatException();
+		// if (isValidDate(std::atoi(line.substr(0, 4).c_str()), std::atoi(line.substr(5, 7).c_str()), std::atoi(line.substr(8, 10).c_str())) == false)
+		// 	throw InvalidDateException();
+		// if (isValidPrice(line, commasPos) == false)
+		// 	throw InvalidPriceException();
+		this->_btcDataBase.insert(std::pair<std::string, double>(line.substr(0, commasPos), std::strtod(line.substr(commasPos + 1, line.size()).c_str(), NULL)));
+	}
+	return ;
+}
+
+int	BitcoinExchange::countOccurences(std::string line, char c)
 {
 	int	count = 0;
 
-	for (int i = 0; i < line.length(); i++)
+	for (size_t i = 0; i < line.length(); i++)
 		if (line[i] == c)
 			count++;
 	return (count);
 }
 
-bool	isValidDateFormat(std::string line)
+bool	BitcoinExchange::isValidLineFormat(std::string line)
 {
-	if (line.length() > 10 || countOccurences(line, '-') != 2)
+	if (line.length() != 10 || countOccurences(line, '-') != 2 || line.find('-') != 4 || line.find_last_of('-') != 7)
 		return false;
-	for (int i = 0; i < line.length(); i++)
+	for (size_t i = 0; i < line.length(); i++)
 	{
 		if (line[i] == '-')
 			continue ;
@@ -116,7 +125,18 @@ bool	isValidDateFormat(std::string line)
 	return true;
 }
 
-bool	isValidDate(int year, int month, int day)
+bool	BitcoinExchange::isValidPrice(std::string line, int commasPos)
+{
+	char	*endPtr;
+	double	value = std::strtod(line.substr(commasPos + 1, line.length()).c_str(), &endPtr);
+
+	std::cout << value << std::endl;
+	if (*endPtr != 0 || value < 0)
+		return false;
+	return true;
+}
+
+bool	BitcoinExchange::isValidDate(int year, int month, int day)
 {
 	if ((month > 12 || month < 1) || (year < 1 || year > 9999) || day < 1)
 		return false;
@@ -134,46 +154,7 @@ bool	isValidDate(int year, int month, int day)
 	return true;
 }
 
-void	BitcoinExchange::parseDate(std::string line)
-{
-	char	*endPtr;
-	long	year = std::atoi(line.substr(0, line.find('-')).c_str());
-	long	month = std::atoi(line.substr(line.find('-') + 1, line.find_last_of('-')).c_str());
-	long	day = std::atoi(line.substr(line.find_last_of('-') + 1, line.length()).c_str());
-	
-	if (isValidDate(year, month, day) == false)
-	{
-		std::cout << "Error: " << line << " is not a valid date" << std::endl;
-		exit(1);
-	}
-	// std::cout << year << " " << month << " " << day << std::endl;
-	// int pos = line.find('-');
-	// int year = std::atoi(line.substr(0, pos).c_str());
-	// line.replace(line.begin(), line.begin() + (pos + 1), "");
-	// pos = line.find('-');
-	// std::cout << line << std::endl;
-	// int year = std::atoi(line.substr(0, pos));
-	// pos = std::find(line.begin() + pos, line.end(), '-');
-
-	return ;
-}
-
-// int	getDate(std::string line)
-// {
-// 	return ()
-// }
-
-// void	BitcoinExchange::parsePrice(double price)
-// {
-
-// 	pos = line.find('|');
-// 	price = line.substr(pos + 1, line.size());
-// 	map.insert(std::pair<std::string, double>(date, std::strtod(price.c_str(), NULL)));
-// 	return ;
-// }
-
 // // Les annees bissextiles sont les annees divisibles par 4, sauf si elles sont divisibles par 100.
 // // Toutefois, les annees divisibles par 400 sont bissextiles.
 
-bool	isLeapYear(int year) { return ((year % 4 == 0) && (year % 100 != 0 || year % 400 == 0)); }
-
+bool	BitcoinExchange::isLeapYear(int year) { return ((year % 4 == 0) && (year % 100 != 0 || year % 400 == 0)); }
