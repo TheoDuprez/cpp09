@@ -6,11 +6,13 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 13:09:58 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/13 04:57:06 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/01/15 14:45:51 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/BitcoinExchange.hpp"
+
+// Voir si il faut gerer les doublons dans input
 
 BitcoinExchange::BitcoinExchange(void)
 {
@@ -27,7 +29,7 @@ BitcoinExchange::BitcoinExchange(std::string priceDataBase)
 		std::cout << "Error: " << priceDataBase << " is not a valid file" << std::endl;
 		exit(1);
 	}
-	// checkDataBase(file);
+	checkDataBase(file);
 	return ;
 }
 
@@ -57,8 +59,6 @@ void	BitcoinExchange::checkDataBase(std::ifstream& file)
 	int			i = 1;
 	std::string	line;
 
-	
-
 	while (getline(file, line))
 	{
 		if (i++ == 1)
@@ -66,10 +66,12 @@ void	BitcoinExchange::checkDataBase(std::ifstream& file)
 		commasPos = line.find(',');
 		if (commasPos != 10 || isValidLineFormat(line.substr(0, commasPos)) == false)
 			throw InvalidLineFormatException();
-		if (isValidDate(std::atoi(line.substr(0, 4).c_str()), std::atoi(line.substr(5, 7).c_str()), std::atoi(line.substr(8, 10).c_str())) == false)
+		if (isValidDate(std::atoi(line.substr(0, 4).c_str()), std::atoi(line.substr(5, 2).c_str()), std::atoi(line.substr(8, 2).c_str())) == false)
 			throw InvalidDateException();
-		if (isValidPrice(line, commasPos) == false)
+		if (isValidValue(line, commasPos) == false)
 			throw InvalidPriceException();
+		if (this->_btcDataBase.find(line.substr(0, commasPos)) != this->_btcDataBase.end())
+			throw InvalidAmountException();
 		this->_btcDataBase.insert(std::pair<std::string, double>(line.substr(0, commasPos), std::strtod(line.substr(commasPos + 1, line.size()).c_str(), NULL)));
 	}
 	return ;
@@ -77,28 +79,40 @@ void	BitcoinExchange::checkDataBase(std::ifstream& file)
 
 void	BitcoinExchange::printAmount(std::ifstream& file)
 {
-	int			commasPos;
 	int			i = 1;
 	std::string	line;
-	std::string	formatedLine;
+	std::map<std::string, double>::iterator it;
 
 	while (getline(file, line))
 	{
 		if (i++ == 1)
 			continue ;
-		line = line.substr(0, 10) + "|" + line.substr(13, line.length());
-		// line = line.substr(10, 11).c_str();
-		std::cout << "test = " << line << std::endl;
-		commasPos = line.find(',');
-		// if (commasPos != 10 || isValidLineFormat(line.substr(0, commasPos)) == false)
-		// 	throw InvalidLineFormatException();
-		// if (isValidDate(std::atoi(line.substr(0, 4).c_str()), std::atoi(line.substr(5, 7).c_str()), std::atoi(line.substr(8, 10).c_str())) == false)
-		// 	throw InvalidDateException();
-		// if (isValidPrice(line, commasPos) == false)
-		// 	throw InvalidPriceException();
-		this->_btcDataBase.insert(std::pair<std::string, double>(line.substr(0, commasPos), std::strtod(line.substr(commasPos + 1, line.size()).c_str(), NULL)));
+		if (checkAmountDataBase(line) == false)
+			continue ;
+		else if (this->_btcDataBase.find(line.substr(0, 10)) != this->_btcDataBase.end())
+			std::cout <<  line.substr(0, 10) << " => " << line.substr(13, line.length()) << " = " << this->_btcDataBase[line.substr(0, 10)] * std::strtod(line.substr(12, line.size()).c_str(), NULL) << std::endl;
+		else {
+			it = this->_btcDataBase.lower_bound(line.substr(0, 10));
+			it--;
+			std::cout <<  line.substr(0, 10) << " => " << line.substr(13, line.length()) << " = " << this->_btcDataBase[it->first] * std::strtod(line.substr(12, line.size()).c_str(), NULL) << std::endl;
+		}
 	}
 	return ;
+}
+
+bool	BitcoinExchange::checkAmountDataBase(std::string& line)
+{
+	if (line.substr(10, 3) != " | ") {
+		std::cout << "Error: bad input => " << line.substr(0, 10) << std::endl;
+		return false;
+	} else if (std::strtold(line.substr(12, line.length()).c_str(), NULL) > 2147483647) {
+		std::cout << "Error: too large number." << std::endl;
+		return false;
+	} else if (isValidValue(line, 12) == false) {
+		std::cout << "Error: not a positive number." << std::endl;
+		return false;
+	}
+	return true;
 }
 
 int	BitcoinExchange::countOccurences(std::string line, char c)
@@ -125,12 +139,11 @@ bool	BitcoinExchange::isValidLineFormat(std::string line)
 	return true;
 }
 
-bool	BitcoinExchange::isValidPrice(std::string line, int commasPos)
+bool	BitcoinExchange::isValidValue(std::string line, int pos)
 {
 	char	*endPtr;
-	double	value = std::strtod(line.substr(commasPos + 1, line.length()).c_str(), &endPtr);
+	double	value = std::strtod(line.substr(pos + 1, line.length()).c_str(), &endPtr);
 
-	std::cout << value << std::endl;
 	if (*endPtr != 0 || value < 0)
 		return false;
 	return true;

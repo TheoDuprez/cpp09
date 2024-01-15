@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:03:22 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/13 04:22:07 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/01/15 13:03:35 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,9 @@ class BitcoinExchange
 		int		countOccurences(std::string line, char c);
 		bool	isValidLineFormat(std::string line);
 		void	printAmount(std::ifstream& file);
+		bool	checkAmountDataBase(std::string& line);
 		bool	isValidDate(int year, int month, int day);
-		bool	isValidPrice(std::string line, int commasPos);
+		bool	isValidValue(std::string line, int commasPos);
 		bool	isLeapYear(int year);
 };
 
@@ -72,5 +73,14 @@ class InvalidPriceException : public std::exception
 		virtual const char* what() const throw()
 		{
 			return ("Invalid price");
+		}
+};
+
+class InvalidAmountException : public std::exception
+{
+	public:
+		virtual const char* what() const throw()
+		{
+			return ("Invalid amount");
 		}
 };
