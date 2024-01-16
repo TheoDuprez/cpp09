@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 13:09:58 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/16 14:18:52 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/01/16 16:38:45 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ void	BitcoinExchange::checkInputFile(std::string& line)
 	if (line.length() < 10 || line.substr(10, 3) != " | " || isStringContainOnlyNumbers(line.substr(13, line.length())) == false) {
 		_errorMsg = "Error: bad input => " + line.substr(0, line.length());
 		throw InvalidInputLineException(_errorMsg);
-	} else if (std::strtold(line.substr(12, line.length()).c_str(), NULL) > INT_MAX) {
+	} else if (std::strtold(line.substr(12, line.length()).c_str(), NULL) > 1000) {
 		_errorMsg = "Error: too large a number.";
 		throw InvalidInputLineException(_errorMsg);
 	} else if (isValidValue(line, 12) == false) {
@@ -186,4 +186,19 @@ bool	BitcoinExchange::isValidValue(std::string& line, int pos)
 	if (*endPtr != 0 || value < 0 || value > INT_MAX)
 		return false;
 	return true;
+}
+
+const char* InvalidFileException::what() const throw()
+{
+	return ("Error: invalid file");
+}
+
+const char* InvalidInputLineException::what() const throw()
+{
+	return _errorMsg.c_str();
+}
+
+const char* InvalidDataBaseLineException::what() const throw()
+{
+	return _errorMsg.c_str();
 }

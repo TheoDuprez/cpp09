@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:03:22 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/16 14:18:46 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/01/16 14:46:24 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,7 @@ class BitcoinExchange
 class InvalidFileException : public std::exception
 {
 	public:
-		virtual const char* what() const throw()
-		{
-			return ("Error: invalid file");
-		}
+		virtual const char* what() const throw();
 };
 
 class InvalidInputLineException : public std::exception
@@ -58,9 +55,7 @@ class InvalidInputLineException : public std::exception
 	public:
 		InvalidInputLineException(std::string& errorMsg) : _errorMsg(errorMsg) {}
 		~InvalidInputLineException() throw() {}
-		virtual const char* what() const throw() {
-			return _errorMsg.c_str();
-		}
+		virtual const char* what() const throw();
 };
 
 class InvalidDataBaseLineException : public std::exception
@@ -71,7 +66,5 @@ class InvalidDataBaseLineException : public std::exception
 	public:
 		InvalidDataBaseLineException(const std::string& errorMsg) : _errorMsg(errorMsg) {}
 		~InvalidDataBaseLineException() throw() {}
-		virtual const char* what() const throw() {
-			return _errorMsg.c_str();
-		}
+		virtual const char* what() const throw();
 };
