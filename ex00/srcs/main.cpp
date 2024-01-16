@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 13:07:51 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/15 12:57:15 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/01/16 13:51:44 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,18 +19,24 @@ int main(int ac, char **av)
 		std::cout << "Usage: ./btc [dateDataBase]" << std::endl;
 		return (1);
 	}
-
 	try
 	{
 		std::ifstream file(av[1]);
 		if (!file.is_open())
 			throw InvalidFileException();
-		BitcoinExchange exchange((std::string("data.csv")));
-		exchange.printAmount(file);
-	}
-	catch(const std::exception& e)
-	{
-		std::cout << "Error : " << e.what() << std::endl;
+		try {
+			BitcoinExchange exchange((std::string("data.csv")));
+			exchange.printAmount(file);
+		} catch(const InvalidDataBaseLineException& e) {
+			std::cout << e.what() << std::endl;
+			return (1); 
+		} catch (const InvalidFileException& e) {
+			std::cout << e.what() << std::endl;
+			return (1);
+		}
+	} catch(const std::exception& e) {
+		std::cout << e.what() << std::endl;
+		return (1);
 	}
 
 	return (0);

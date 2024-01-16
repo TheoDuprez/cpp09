@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:03:22 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/15 13:03:35 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/01/16 14:18:46 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 #include <fstream>
 #include <cstdlib>
 #include <map>
-#include <string>
+#include <limits>
+#include <climits>
 #include <sstream>
-#include <algorithm>
 
 class BitcoinExchange
 {
@@ -31,31 +31,14 @@ class BitcoinExchange
 		~BitcoinExchange(void);
 
 		void	checkDataBase(std::ifstream& file);
-		int		countOccurences(std::string line, char c);
-		bool	isValidLineFormat(std::string line);
 		void	printAmount(std::ifstream& file);
-		bool	checkAmountDataBase(std::string& line);
-		bool	isValidDate(int year, int month, int day);
-		bool	isValidValue(std::string line, int commasPos);
+		void	checkInputFile(std::string& line);
+		int		countOccurences(std::string& line, char c);
+		bool	isValidLineFormat(std::string date, std::string value);
 		bool	isLeapYear(int year);
-};
-
-class InvalidDateException : public std::exception
-{
-	public:
-		virtual const char* what() const throw()
-		{
-			return ("Invalid date");
-		}
-};
-
-class InvalidLineFormatException : public std::exception
-{
-	public:
-		virtual const char* what() const throw()
-		{
-			return ("Invalid line, line format should be \"YYYY-MM-DD,VALUE\"");
-		}
+		bool	isValidDate(int year, int month, int day);
+		bool	isStringContainOnlyNumbers(std::string line);
+		bool	isValidValue(std::string& line, int commasPos);
 };
 
 class InvalidFileException : public std::exception
@@ -63,24 +46,32 @@ class InvalidFileException : public std::exception
 	public:
 		virtual const char* what() const throw()
 		{
-			return ("Invalid file");
+			return ("Error: invalid file");
 		}
 };
 
-class InvalidPriceException : public std::exception
+class InvalidInputLineException : public std::exception
 {
+	private:
+		std::string _errorMsg;
+
 	public:
-		virtual const char* what() const throw()
-		{
-			return ("Invalid price");
+		InvalidInputLineException(std::string& errorMsg) : _errorMsg(errorMsg) {}
+		~InvalidInputLineException() throw() {}
+		virtual const char* what() const throw() {
+			return _errorMsg.c_str();
 		}
 };
 
-class InvalidAmountException : public std::exception
+class InvalidDataBaseLineException : public std::exception
 {
+	private:
+		const std::string _errorMsg;
+
 	public:
-		virtual const char* what() const throw()
-		{
-			return ("Invalid amount");
+		InvalidDataBaseLineException(const std::string& errorMsg) : _errorMsg(errorMsg) {}
+		~InvalidDataBaseLineException() throw() {}
+		virtual const char* what() const throw() {
+			return _errorMsg.c_str();
 		}
 };
