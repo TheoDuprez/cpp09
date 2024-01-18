@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 13:09:58 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/18 13:39:05 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/01/18 13:53:08 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	RPN::excecuteRPN(std::string rpn)
 		throw ErrorException();
 	while (iss >> token)
 	{
-		if (isdigit(token[0]) || (token[0] == '-' && isdigit(token[1])))
+		if ((token.length() == 1 && isdigit(token[0])) || (token.length() == 2 && token[0] == '-' && isdigit(token[1])))
 			_stackRPN.push(std::atoi(token.c_str()));
 		else if (istoken(token[0]) == true && _stackRPN.size() >= 2)
 			makeCalculation(token);
