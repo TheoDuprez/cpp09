@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 13:09:58 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/16 16:40:04 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/01/18 13:39:05 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,21 +37,60 @@ RPN::~RPN(void)
 
 void	RPN::excecuteRPN(std::string rpn)
 {
-	for (size_t i = 0; i < rpn.length(); i++)
+	std::istringstream	iss(rpn);
+	std::string			token;
+
+	if (rpn.empty())
+		throw ErrorException();
+	while (iss >> token)
 	{
-		if (i % 2 == 0)
-			continue ;
-		RPN::_stackRPN.push(std::atoi(&rpn[i]));
+		if (isdigit(token[0]) || (token[0] == '-' && isdigit(token[1])))
+			_stackRPN.push(std::atoi(token.c_str()));
+		else if (istoken(token[0]) == true && _stackRPN.size() >= 2)
+			makeCalculation(token);
+		else
+			throw ErrorException();
 	}
-	while (RPN::_stackRPN.empty() == false)
+	if (_stackRPN.size() != 1)
+		throw ErrorException();
+	std::cout << _stackRPN.top() << std::endl;
+
+	return ;
+}
+
+bool	RPN::istoken(char c)
+{
+	if (c == '+' || c == '-' || c == '*' || c == '/')
+		return (true);
+	return (false);
+}
+
+void	RPN::makeCalculation(std::string& token)
+{
+	int	number1 = _stackRPN.top();
+	_stackRPN.pop();
+	int	number2 = _stackRPN.top();
+	_stackRPN.pop();
+	int	res;
+
+	switch (token[0])
 	{
-		std::cout << "TEST\n";
-		std::cout << _stackRPN.top();
-		RPN::_stackRPN.pop();
-		if (RPN::_stackRPN.empty() == false)
-			std::cout << " ";
+		case '+':
+			res = number2 + number1;
+			break;
+		case '-':
+			res = number2 - number1;
+			break;
+		case '*':
+			res = number2 * number1;
+			break;
+		case '/':
+			if (number1 == 0)
+				throw ErrorException();
+			res = number2 / number1;
+			break;
 	}
-	std::cout << std::endl;
+	_stackRPN.push(res);
 	return ;
 }
 
