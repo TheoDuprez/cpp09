@@ -6,9 +6,12 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:03:22 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/16 14:46:24 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/01/23 13:21:10 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef BITCOIN_EXCHANGE_HPP
+# define BITCOIN_EXCHANGE_HPP
 
 #include <iostream>
 #include <fstream>
@@ -68,3 +71,5 @@ class InvalidDataBaseLineException : public std::exception
 		~InvalidDataBaseLineException() throw() {}
 		virtual const char* what() const throw();
 };
+
+#endif

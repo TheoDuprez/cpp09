@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 13:09:58 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/18 13:53:08 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/01/23 14:19:34 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,4 +94,4 @@ void	RPN::makeCalculation(std::string& token)
 	return ;
 }
 
-std::stack<int>	RPN::_stackRPN;
+std::stack<int, std::list<int> >	RPN::_stackRPN;

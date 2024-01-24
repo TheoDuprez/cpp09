@@ -1,37 +1,44 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   RPN.hpp                                            :+:      :+:    :+:   */
+/*   PmergeMe.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:03:22 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/23 14:19:38 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/01/23 15:16:55 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef RPN_HPP
-# define RPN_HPP
+#ifndef PmergeMe_HPP
+# define PmergeMe_HPP
 
 #include <iostream>
-#include <stack>
-#include <list>
-#include <sstream>
+#include <cstdlib>
+#include <climits>
+#include <deque>
+#include <vector>
+#include <utility>
 
-class RPN
+class PmergeMe
 {
 	private:
-		RPN(void);
-		RPN(const RPN& src);
-		RPN &operator=(const RPN& src);
-		~RPN(void);
-
-		static std::stack<int, std::list<int> >	_stackRPN;
+		std::vector<int>	vec;
+		std::deque<int>		deq;
+		int					straggler;
 
 	public:
-		static void	makeCalculation(std::string& token);
-		static bool	istoken(char c);
-		static void	excecuteRPN(std::string rpn);
+		PmergeMe(void);
+		PmergeMe(char** arg);
+		PmergeMe(const PmergeMe& src);
+		PmergeMe &operator=(const PmergeMe& src);
+		~PmergeMe(void);
+
+		void	pmergeMeDeque(void);
+		void	pmergeMeVector(void);
+		void	createPair(std::vector<std::pair<int, int> >& pairVector);
+		void	sortPair(std::vector<std::pair<int, int> >& pairVector);
+		void	pushInputToContainers(char** arg);
 };
 
 class ErrorException : public std::exception
