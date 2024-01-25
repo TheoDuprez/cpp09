@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:03:22 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/23 15:16:55 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/01/25 13:14:24 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,13 @@ class PmergeMe
 		PmergeMe &operator=(const PmergeMe& src);
 		~PmergeMe(void);
 
-		void	pmergeMeDeque(void);
-		void	pmergeMeVector(void);
-		void	createPair(std::vector<std::pair<int, int> >& pairVector);
-		void	sortPair(std::vector<std::pair<int, int> >& pairVector);
+		void								pmergeMeDeque(void);
+		void								pmergeMeVector(void);
+		void								createPair(std::vector<std::pair<int, int> >& pairVector);
+		void								sortPair(std::vector<std::pair<int, int> >& pairVector);
+		std::vector<std::pair<int, int> >	mergeSortVector(std::vector<std::pair<int, int> > vec);
+		void								fillS(std::vector<std::pair<int, int> > pairVector, std::vector<int>& S);
+		void								fillPend(std::vector<std::pair<int, int> > pairVector, std::vector<int>& pend);
 		void	pushInputToContainers(char** arg);
 };
 
