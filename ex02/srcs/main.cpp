@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 13:07:51 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/23 15:06:41 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/02/01 11:00:19 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ int main(int ac, char **av)
 	try
 	{
 		PmergeMe	fordJohnson(av + 1);
-		fordJohnson.pmergeMeVector();
+		// fordJohnson.pmergeMeVector();
+		fordJohnson.executePmergeMe();
 	} catch(const std::exception& e) {
 		std::cout << e.what() << std::endl;
 		return (1);

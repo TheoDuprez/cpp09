@@ -59,13 +59,33 @@ void	PmergeMe::pushInputToContainers(char** arg)
 			this->vec.push_back(numberToCheck);
 		}
 	}
-	if (vec.size() % 2 != 0) 
+	if (this->vec.size() % 2 != 0)
 	{
 		this->straggler = this->vec.back();
 		this->vec.pop_back();
 		this->deq.pop_back();
 	}
 	return ;
+}
+
+void	PmergeMe::executePmergeMe(void)
+{
+	clock_t timeVec;
+	clock_t timeDeq;
+	std::cout << "Before:  ";
+	for (size_t i = 0; i < this->vec.size(); i++)
+		std::cout << this->vec[i] << " ";
+	if (this->straggler != -1)
+		std::cout << this->straggler << " ";
+	std::cout << std::endl;
+	timeVec = clock();
+	pmergeMeVector();
+	timeVec = clock() - timeVec;
+	std::cout << std::endl << "After:   ";
+	for (size_t i = 0; i < this->vec.size(); i++)
+		std::cout << this->vec[i] << " ";
+	std::cout << std::endl;
+	std::cout << "Time to process a range of " << this->vec.size() << " elements with std::vector : " << static_cast<double>(time) << " us" << std::endl;
 }
 
 void	PmergeMe::pmergeMeVector(void)
@@ -76,25 +96,11 @@ void	PmergeMe::pmergeMeVector(void)
 
 	createPair(pairVector);
 	sortPair(pairVector);
-	
-	for (std::vector<std::pair<int, int> >::iterator start = pairVector.begin(); start != pairVector.end(); start++)
-		std::cout << "Pair before = " << start->first << " " << start->second << std::endl;
-	std::cout << "\n------------------------------\n" << std::endl;
 	pairVector = mergeSortVector(pairVector);
-	for (std::vector<std::pair<int, int> >::iterator start = pairVector.begin(); start != pairVector.end(); start++)
-		std::cout << "Pair after = " << start->first << " " << start->second << std::endl;
 	fillS(pairVector, S);
-	fillPend(pairVector, pend);
-	std::cout << "\n------------------------------\n" << std::endl;
-	std::cout << "S = \n";
-	std::vector<int>::iterator start = S.begin();
-	for (; start != S.end(); start++)
-		std::cout << *start << std::endl;
-	std::cout << "\n-----------------------------------\n\nPend = \n\n";
-	start = pend.begin();
-	for (; start != pend.end(); start++)
-		std::cout << *start << std::endl;
-
+	insertIntoS(pairVector, S);
+	this->vec = S;
+	return ;
 }
 
 void	PmergeMe::fillS(std::vector<std::pair<int, int> > pairVector, std::vector<int>& S)
@@ -106,11 +112,48 @@ void	PmergeMe::fillS(std::vector<std::pair<int, int> > pairVector, std::vector<i
 	return ;
 }
 
-void	PmergeMe::fillPend(std::vector<std::pair<int, int> > pairVector, std::vector<int>& pend)
+int	PmergeMe::determineNumberOfSuit(int power, int oldNumber)
 {
-	std::vector<std::pair<int, int> >::iterator start = pairVector.begin() + 1;
-	for (; start != pairVector.end(); start++)
-		pend.push_back(start->first);
+	return ((2 << power) - oldNumber);
+}
+
+int	PmergeMe::getIndexToSearch(std::vector<int> S, int numberToSearch)
+{
+	int	i = 0;
+	while (S[i++] < numberToSearch)
+		;
+	return (i);
+}
+
+void	PmergeMe::insertIntoS(std::vector<std::pair<int, int> > pairVector, std::vector<int>& S)
+{
+	int	suitNumber = 2;
+	int	oldNumber;
+	size_t	oldIndex = 0;
+	size_t	numberInserted = 0;
+
+	for (int i = 0; true; i++)
+	{
+		if (i == 0)
+			oldNumber = 0;
+		else
+			oldNumber = suitNumber;
+		suitNumber = (2 << i) - oldNumber;
+		for (size_t index = suitNumber + oldIndex; index > oldIndex; index--)
+		{
+			if (numberInserted == pairVector.size() - 1)
+			{
+				if (this->straggler != -1)
+					S.insert(std::upper_bound(S.begin(), S.end(), this->straggler), this->straggler);
+				return ;
+			}
+			if (index > pairVector.size() - 1)
+				index = pairVector.size() - 1;
+			S.insert(std::upper_bound(S.begin(), S.begin() + getIndexToSearch(S, (pairVector.begin() + index)->first), (pairVector.begin() + index)->first), (pairVector.begin() + index)->first);
+			numberInserted++;
+		}
+		oldIndex += suitNumber;
+	}
 	return ;
 }
 
