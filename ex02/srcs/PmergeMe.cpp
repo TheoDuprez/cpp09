@@ -72,6 +72,7 @@ void	PmergeMe::executePmergeMe(void)
 {
 	clock_t timeVec;
 	clock_t timeDeq;
+
 	std::cout << "Before:  ";
 	for (size_t i = 0; i < this->vec.size(); i++)
 		std::cout << this->vec[i] << " ";
@@ -81,20 +82,23 @@ void	PmergeMe::executePmergeMe(void)
 	timeVec = clock();
 	pmergeMeVector();
 	timeVec = clock() - timeVec;
+	timeDeq = clock();
+	pmergeMeDeque();
+	timeDeq = clock() - timeDeq;
 	std::cout << std::endl << "After:   ";
 	for (size_t i = 0; i < this->vec.size(); i++)
 		std::cout << this->vec[i] << " ";
 	std::cout << std::endl;
-	std::cout << "Time to process a range of " << this->vec.size() << " elements with std::vector : " << static_cast<double>(time) << " us" << std::endl;
+	std::cout << "Time to process a range of " << this->vec.size() << " elements with std::vector : " << static_cast<double>(timeVec) << " us" << std::endl;
+	std::cout << "Time to process a range of " << this->deq.size() << " elements with std::deque : " << static_cast<double>(timeDeq) << " us" << std::endl;
 }
 
 void	PmergeMe::pmergeMeVector(void)
 {
 	std::vector<std::pair<int, int> >	pairVector;
 	std::vector<int>					S;
-	std::vector<int>					pend;
 
-	createPair(pairVector);
+	createPair(pairVector, this->vec);
 	sortPair(pairVector);
 	pairVector = mergeSortVector(pairVector);
 	fillS(pairVector, S);
@@ -103,21 +107,32 @@ void	PmergeMe::pmergeMeVector(void)
 	return ;
 }
 
-void	PmergeMe::fillS(std::vector<std::pair<int, int> > pairVector, std::vector<int>& S)
+void	PmergeMe::pmergeMeDeque(void)
 {
-	std::vector<std::pair<int, int> >::iterator start = pairVector.begin();
+	std::deque<std::pair<int, int> >	pairVector;
+	std::deque<int>					S;
+
+	createPair(pairVector, this->deq);
+	sortPair(pairVector);
+	pairVector = mergeSortVector(pairVector);
+	fillS(pairVector, S);
+	insertIntoS(pairVector, S);
+	this->deq = S;
+	return ;
+}
+
+template<typename PairContainer, typename Container>
+void	PmergeMe::fillS(PairContainer pairVector, Container& S)
+{
+	typename PairContainer::iterator start = pairVector.begin();
 	S.push_back(start->first);
 	for (; start != pairVector.end(); start++)
 		S.push_back(start->second);
 	return ;
 }
 
-int	PmergeMe::determineNumberOfSuit(int power, int oldNumber)
-{
-	return ((2 << power) - oldNumber);
-}
-
-int	PmergeMe::getIndexToSearch(std::vector<int> S, int numberToSearch)
+template<typename Container>
+int	PmergeMe::getIndexToSearch(Container S, int numberToSearch)
 {
 	int	i = 0;
 	while (S[i++] < numberToSearch)
@@ -125,7 +140,8 @@ int	PmergeMe::getIndexToSearch(std::vector<int> S, int numberToSearch)
 	return (i);
 }
 
-void	PmergeMe::insertIntoS(std::vector<std::pair<int, int> > pairVector, std::vector<int>& S)
+template<typename PairContainer, typename Container>
+void	PmergeMe::insertIntoS(PairContainer pairVector, Container& S)
 {
 	int	suitNumber = 2;
 	int	oldNumber;
@@ -157,18 +173,20 @@ void	PmergeMe::insertIntoS(std::vector<std::pair<int, int> > pairVector, std::ve
 	return ;
 }
 
-std::vector<std::pair<int, int> > PmergeMe::mergeSortVector(std::vector<std::pair<int, int> > vec)
+template<typename PairContainer>
+PairContainer PmergeMe::mergeSortVector(PairContainer vec)
 {
 	if (vec.size() < 2)
 		return vec;
-	std::vector<std::pair<int, int> > left(vec.begin(), vec.begin() + vec.size() / 2);
-	std::vector<std::pair<int, int> > right(vec.begin() + vec.size() / 2, vec.end());
+	PairContainer left(vec.begin(), vec.begin() + vec.size() / 2);
+	PairContainer right(vec.begin() + vec.size() / 2, vec.end());
 	return mergeArray(mergeSortVector(left), mergeSortVector(right));
 }
 
-std::vector<std::pair<int, int> > mergeArray(std::vector<std::pair<int, int> > left, std::vector<std::pair<int, int> > right)
+template<typename PairContainer>
+PairContainer PmergeMe::mergeArray(PairContainer left, PairContainer right)
 {
-	std::vector<std::pair<int, int> >	res;
+	PairContainer	res;
 	size_t				leftIndex = 0;
 	size_t				rightIndex = 0;
 
@@ -186,18 +204,20 @@ std::vector<std::pair<int, int> > mergeArray(std::vector<std::pair<int, int> > l
 	return res;
 }
 
-void	PmergeMe::createPair(std::vector<std::pair<int, int> >& pairVector)
+template<typename PairContainer, typename Container>
+void	PmergeMe::createPair(PairContainer& pairVector, Container& vec)
 {
-	for (std::vector<int>::iterator start = this->vec.begin(); start != this->vec.end(); start++)
+	for (typename Container::iterator start = vec.begin(); start != vec.end(); start++)
 		pairVector.push_back(std::make_pair(*start, *(++start)));
 	return ;
 }
 
-void	PmergeMe::sortPair(std::vector<std::pair<int, int> >& pairVector)
+template<typename PairContainer>
+void	PmergeMe::sortPair(PairContainer& pairVector)
 {
 	int	tmp;
 
-	for (std::vector<std::pair<int, int> >::iterator start = pairVector.begin(); start != pairVector.end(); start++)
+	for (typename PairContainer::iterator start = pairVector.begin(); start != pairVector.end(); start++)
 	{
 		if (start->first > start->second)
 		{
@@ -207,9 +227,4 @@ void	PmergeMe::sortPair(std::vector<std::pair<int, int> >& pairVector)
 		}
 	}
 	return ;
-}
-
-void	PmergeMe::pmergeMeDeque(void)
-{
-	// PmergeMe::checkInput(arg);
 }
