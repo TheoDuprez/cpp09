@@ -32,7 +32,7 @@ PmergeMe::PmergeMe(const PmergeMe& src)
 
 PmergeMe& PmergeMe::operator=(const PmergeMe& src)
 {
-	(void)src;
+	static_cast<void>(src);
 	return (*this);
 }
 
@@ -172,11 +172,6 @@ PairContainer PmergeMe::mergeArray(PairContainer left, PairContainer right)
 		res.push_back(left[leftIndex++]);
 	while (rightIndex < right.size())
 		res.push_back(right[rightIndex++]);
-	for (size_t i = 0; i < res.size(); i++)
-	{
-		std::cout << "[" << res[i].first << "," << res[i].second << "]\n";
-	}
-	std::cout << "------------\n";
 	return res;
 }
 
@@ -215,7 +210,7 @@ void	PmergeMe::insertIntoS(PairContainer pairContainer, Container& S)
 			}
 			if (index > pairContainer.size() - 1)
 				index = pairContainer.size() - 1;
-			S.insert(std::upper_bound(S.begin(), S.begin() + getIndexToSearch(S, (pairContainer.begin() + index)->first), (pairContainer.begin() + index)->first), (pairContainer.begin() + index)->first);
+			S.insert(std::upper_bound(S.begin(), S.begin() + getIndexToSearch(S, (pairContainer.begin() + index)->second), (pairContainer.begin() + index)->first), (pairContainer.begin() + index)->first);
 			numberInserted++;
 		}
 		oldIndex += suitNumber;

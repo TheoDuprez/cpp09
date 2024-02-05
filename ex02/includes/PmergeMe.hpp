@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:03:22 by tduprez           #+#    #+#             */
-/*   Updated: 2024/02/02 11:38:43 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/02/05 14:19:07 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,15 +29,8 @@ class PmergeMe
 		std::deque<int>		deq;
 		int					straggler;
 
-	public:
 		PmergeMe(void);
-		PmergeMe(char** arg);
-		PmergeMe(const PmergeMe& src);
-		PmergeMe &operator=(const PmergeMe& src);
-		~PmergeMe(void);
-
 		void			pushInputToContainers(char** arg);
-		void			executePmergeMe(void);
 		void			pmergeMeDeque(void);
 		void			pmergeMeVector(void);
 		template<typename PairContainer, typename Container>
@@ -52,10 +45,16 @@ class PmergeMe
 		void			insertIntoS(PairContainer pairContainer, Container& S);
 		template<typename PairContainer>
 		PairContainer	mergeArray(PairContainer left, PairContainer right);
-		// void								fillS(std::vector<std::pair<int, int> > pairContainer, Container& S);
-		// void								insertIntoS(std::vector<std::pair<int, int> > pairContainer, std::vector<int>& S);
 		template<typename Container>
 		int				getIndexToSearch(Container S, int numberToSearch);
+
+	public:
+		PmergeMe(char** arg);
+		PmergeMe(const PmergeMe& src);
+		PmergeMe &operator=(const PmergeMe& src);
+		~PmergeMe(void);
+
+		void			executePmergeMe(void);
 };
 
 class ErrorException : public std::exception
