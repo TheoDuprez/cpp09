@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:03:22 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/23 13:21:10 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/02/05 13:17:11 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 #include <fstream>
 #include <cstdlib>
 #include <map>
-#include <limits>
 #include <climits>
 #include <sstream>
 
@@ -26,6 +25,14 @@ class BitcoinExchange
 	private:
 		BitcoinExchange(void);
 		std::map<std::string, double> _btcDataBase;
+		void	checkDataBase(std::ifstream& file);
+		void	checkInputLine(std::string& line);
+		int		countOccurences(std::string& line, char c);
+		bool	isValidLineFormat(std::string date, std::string value);
+		bool	isLeapYear(int year);
+		bool	isValidDate(int year, int month, int day);
+		bool	isStringContainOnlyNumbers(std::string line);
+		bool	isValidValue(std::string& line, int commasPos);
 
 	public:
 		BitcoinExchange(std::string dateDataBase);
@@ -33,15 +40,7 @@ class BitcoinExchange
 		BitcoinExchange &operator=(const BitcoinExchange& src);
 		~BitcoinExchange(void);
 
-		void	checkDataBase(std::ifstream& file);
 		void	printAmount(std::ifstream& file);
-		void	checkInputFile(std::string& line);
-		int		countOccurences(std::string& line, char c);
-		bool	isValidLineFormat(std::string date, std::string value);
-		bool	isLeapYear(int year);
-		bool	isValidDate(int year, int month, int day);
-		bool	isStringContainOnlyNumbers(std::string line);
-		bool	isValidValue(std::string& line, int commasPos);
 };
 
 class InvalidFileException : public std::exception

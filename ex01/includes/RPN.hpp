@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:03:22 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/23 14:19:38 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/02/05 13:19:06 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,11 @@ class RPN
 		~RPN(void);
 
 		static std::stack<int, std::list<int> >	_stackRPN;
-
-	public:
 		static void	makeCalculation(std::string& token);
 		static bool	istoken(char c);
-		static void	excecuteRPN(std::string rpn);
+
+	public:
+		static void	executeRPN(std::string rpn);
 };
 
 class ErrorException : public std::exception

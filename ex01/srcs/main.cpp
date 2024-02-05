@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 13:07:51 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/18 13:40:31 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/02/05 13:19:14 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int main(int ac, char **av)
 
 	try
 	{
-		RPN::excecuteRPN(av[1]);
+		RPN::executeRPN(av[1]);
 	} catch(const std::exception& e) {
 		std::cout << e.what() << std::endl;
 		return (1);

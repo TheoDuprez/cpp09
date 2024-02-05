@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 13:09:58 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/23 14:19:34 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/02/05 13:19:01 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ RPN::~RPN(void)
 	return ;
 }
 
-void	RPN::excecuteRPN(std::string rpn)
+void	RPN::executeRPN(std::string rpn)
 {
 	std::istringstream	iss(rpn);
 	std::string			token;
