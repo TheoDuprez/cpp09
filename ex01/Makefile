@@ -4,9 +4,7 @@ NAME =			RPN
 
 CC =			c++
 
-CFLAGS =		-std=c++98 -Wall -Werror -Wextra
-
-HEADERS =		./includes
+CFLAGS =		-Wall -Werror -Wextra -std=c++98 -MD
 
 BLACK	= 		\033[0;30m
 RED		= 		\033[0;91m
@@ -17,29 +15,33 @@ PURPLE	= 		\033[0;35m
 CYAN	= 		\033[0;96m
 WHITE	= 		\033[0;37m
 
-SRCS =			./srcs/main.cpp \
-				./srcs/RPN.cpp \
+SRCS =			main \
+				RPN \
 
-OBJS =			$(SRCS:.cpp=.o)
+OBJS =			$(addsuffix .o, $(addprefix .objs/, $(SRCS)))
+D_OBJS =		$(addsuffix .d, $(addprefix .objs/, $(SRCS)))
 
 # RULES ###########################################################################################
 
-all: $(NAME)
 $(NAME): $(OBJS)
-	echo "$(CYAN)Compiling $(NAME) :$(WHITE)"
-	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
-	echo "$(GREEN)$(NAME) successfully compiled !$(WHITE)"
+	@echo "$(CYAN)Compiling RPN :$(WHITE)"
+	@$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
+	@echo "$(GREEN)RPN successfully compiled !$(WHITE)"
 
-./srcs/%.o: ./srcs/%.cpp $(HEADERS)/RPN.hpp
-	$(CC) $(CFLAGS) -I$(HEADERS) -c $< -o $@
+all: $(NAME)
+
+./.objs/%.o: ./srcs/%.cpp
+	@mkdir -p .objs
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	echo "$(YELLOW)Deleting all files exept binaries$(WHITE)"
-	rm -rf $(OBJS)
+	@echo "$(YELLOW)Deleting all files exept binaries$(WHITE)"
+	@rm -rf $(OBJS)
 
 fclean: clean
-	echo "$(PURPLE)Deleting binaries$(WHITE)"
-	rm -rf $(NAME)
+	@echo "$(PURPLE)Deleting binaries$(WHITE)"
+	@rm -rf $(NAME)
+	@rm -rf .objs
 
 re:
 	make -s fclean
@@ -48,3 +50,5 @@ re:
 .SILENT:
 
 .PHONY: all clean fclean re
+
+-include $(D_OBJS)

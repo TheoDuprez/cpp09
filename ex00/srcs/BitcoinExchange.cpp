@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 13:09:58 by tduprez           #+#    #+#             */
-/*   Updated: 2024/02/05 13:15:00 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/02/06 14:34:22 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,8 +154,9 @@ void	BitcoinExchange::printAmount(std::ifstream& file)
 			std::cout <<  line.substr(0, 10) << " => " << line.substr(13, line.length()) << " = " << this->_btcDataBase[line.substr(0, 10)] * std::strtod(line.substr(12, line.size()).c_str(), NULL) << std::endl;
 		else {
 			it = this->_btcDataBase.lower_bound(line.substr(0, 10));
-			it--;
-			std::cout <<  line.substr(0, 10) << " => " << line.substr(13, line.length()) << " = " << this->_btcDataBase[it->first] * std::strtod(line.substr(12, line.size()).c_str(), NULL) << std::endl;
+			if (it == this->_btcDataBase.end() || this->_btcDataBase[it->first])
+				it--;
+			std::cout <<  line.substr(0, 10)<< " => " << line.substr(13, line.length()) << " = " << this->_btcDataBase[it->first] * std::strtod(line.substr(12, line.size()).c_str(), NULL) << std::endl;
 		}
 	}
 	return ;

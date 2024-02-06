@@ -151,6 +151,7 @@ PairContainer PmergeMe::mergeSort(PairContainer pairContainer)
 		return pairContainer;
 	PairContainer left(pairContainer.begin(), pairContainer.begin() + pairContainer.size() / 2);
 	PairContainer right(pairContainer.begin() + pairContainer.size() / 2, pairContainer.end());
+
 	return mergeArray(mergeSort(left), mergeSort(right));
 }
 
