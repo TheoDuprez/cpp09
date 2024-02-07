@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 13:09:58 by tduprez           #+#    #+#             */
-/*   Updated: 2024/02/07 17:08:45 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/02/07 17:17:30 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,10 +152,8 @@ void	BitcoinExchange::printAmount(std::ifstream& file)
 
 	while (getline(file, line))
 	{
-		if (i == 1 && line == "date | value") {
-			i++;
+		if (i++ == 1)
 			continue ;
-		}
 		try {
 			checkInputLine(line);
 		} catch (InvalidInputLineException& e) {
@@ -170,7 +168,6 @@ void	BitcoinExchange::printAmount(std::ifstream& file)
 				it--;
 			std::cout <<  line.substr(0, 10)<< " => " << line.substr(13, line.length()) << " = " << this->_btcDataBase[it->first] * std::strtod(line.substr(12, line.size()).c_str(), NULL) << std::endl;
 		}
-		i++;
 	}
 	return ;
 }
