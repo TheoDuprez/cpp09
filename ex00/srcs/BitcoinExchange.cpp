@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 13:09:58 by tduprez           #+#    #+#             */
-/*   Updated: 2024/02/06 14:34:22 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/02/07 17:08:45 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ BitcoinExchange::BitcoinExchange(std::string dataBase)
 	std::ifstream file;
 
 	file.open(dataBase.c_str());
-	if (file.is_open() == false)
+	if (file.is_open() == false || file.peek() == EOF)
 		throw InvalidFileException();
 	checkDataBase(file);
 	return ;
@@ -53,25 +53,35 @@ void	BitcoinExchange::checkDataBase(std::ifstream& file)
 	std::string	line;
 	std::ostringstream oss;
 
-	while (getline(file, line))
+	while (file.peek() != EOF && getline(file, line))
 	{
-		if (i++ == 1)
+		if (i == 1 && !line.empty() && line == "date,exchange_rate") {
+			i++;
 			continue ;
+		} else if (i == 1) {
+			oss << "Error at line " << i << ": title of csv should be \"date,exchange_rate\"";
+			throw InvalidDataBaseLineException(oss.str());
+		}
 		commasPos = line.find(',');
 		if (commasPos != 10 || isValidLineFormat(line.substr(0, commasPos), line.substr(commasPos + 1, line.length())) == false) {
-			oss << "Error at line " << i - 1 << ": format invalid, line format should be \"YYYY-MM-DD,VALUE\".";
+			oss << "Error at line " << i << ": format invalid, line format should be \"YYYY-MM-DD,VALUE\".";
 			throw InvalidDataBaseLineException(oss.str());
 		} else if (isValidDate(std::atoi(line.substr(0, 4).c_str()), std::atoi(line.substr(5, 2).c_str()), std::atoi(line.substr(8, 2).c_str())) == false) {
-			oss << "Error at line " << i - 1 << ": date invalid, date should be between 0001-01-01 and 9999-12-31.";
+			oss << "Error at line " << i << ": date invalid, date should be between 0001-01-01 and 9999-12-31.";
 			throw InvalidDataBaseLineException(oss.str());
 		} else if (isValidValue(line, commasPos) == false || line.substr(commasPos + 1, line.length()) == "-0") {
-			oss << "Error at line " << i - 1 << ": price invalid, price should be between 0 and 2147483647.";
+			oss << "Error at line " << i << ": price invalid, price should be between 0 and 2147483647.";
 			throw InvalidDataBaseLineException(oss.str());
 		} else if (this->_btcDataBase.find(line.substr(0, commasPos)) != this->_btcDataBase.end()) {
-			oss << "Error at line " << i - 1 << ": date already exists.";
+			oss << "Error at line " << i << ": date already exists.";
 			throw InvalidDataBaseLineException(oss.str());
 		}
 		this->_btcDataBase.insert(std::pair<std::string, double>(line.substr(0, commasPos), std::strtod(line.substr(commasPos + 1, line.size()).c_str(), NULL)));
+		i++;
+	}
+	if (i == 2) {
+		oss << "Error at line " << i << ": database need 1 or more key | value.";
+		throw InvalidDataBaseLineException(oss.str());
 	}
 	return ;
 }
@@ -142,8 +152,10 @@ void	BitcoinExchange::printAmount(std::ifstream& file)
 
 	while (getline(file, line))
 	{
-		if (i++ == 1)
+		if (i == 1 && line == "date | value") {
+			i++;
 			continue ;
+		}
 		try {
 			checkInputLine(line);
 		} catch (InvalidInputLineException& e) {
@@ -158,6 +170,7 @@ void	BitcoinExchange::printAmount(std::ifstream& file)
 				it--;
 			std::cout <<  line.substr(0, 10)<< " => " << line.substr(13, line.length()) << " = " << this->_btcDataBase[it->first] * std::strtod(line.substr(12, line.size()).c_str(), NULL) << std::endl;
 		}
+		i++;
 	}
 	return ;
 }

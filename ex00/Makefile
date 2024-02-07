@@ -21,6 +21,8 @@ SRCS =			main \
 OBJS =			$(addsuffix .o, $(addprefix .objs/, $(SRCS)))
 D_OBJS =		$(addsuffix .d, $(addprefix .objs/, $(SRCS)))
 
+DATA = data.csv
+
 # RULES ###########################################################################################
 
 $(NAME): $(OBJS)
