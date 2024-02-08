@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 13:09:58 by tduprez           #+#    #+#             */
-/*   Updated: 2024/02/07 17:17:30 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/02/08 13:33:35 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,7 @@ void	BitcoinExchange::printAmount(std::ifstream& file)
 
 	while (getline(file, line))
 	{
-		if (i++ == 1)
+		if (i++ == 1 && line == "date | value")
 			continue ;
 		try {
 			checkInputLine(line);
