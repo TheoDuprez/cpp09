@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:03:22 by tduprez           #+#    #+#             */
-/*   Updated: 2024/02/05 13:19:06 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/02/12 17:06:25 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,7 @@ class RPN
 class ErrorException : public std::exception
 {
 	public:
-		virtual const char* what() const throw()
-		{
-			return ("Error");
-		}
+		virtual const char* what() const throw();
 };
 
 #endif

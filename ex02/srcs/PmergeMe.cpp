@@ -227,3 +227,8 @@ int	PmergeMe::getIndexToSearch(Container S, int numberToSearch)
 		;
 	return (i);
 }
+
+const char*	ErrorException::what() const throw()
+{
+	return ("Error");
+}

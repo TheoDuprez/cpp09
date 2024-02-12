@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:03:22 by tduprez           #+#    #+#             */
-/*   Updated: 2024/02/06 17:11:24 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/02/12 17:03:48 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,10 +60,7 @@ class PmergeMe
 class ErrorException : public std::exception
 {
 	public:
-		virtual const char* what() const throw()
-		{
-			return ("Error");
-		}
+		virtual const char* what() const throw();
 };
 
 #endif
