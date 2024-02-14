@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 13:09:58 by tduprez           #+#    #+#             */
-/*   Updated: 2024/02/12 17:14:49 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/02/14 14:33:40 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,19 +63,26 @@ void	BitcoinExchange::checkDataBase(std::ifstream& file)
 			throw InvalidDataBaseLineException(oss.str());
 		}
 		commasPos = line.find(',');
+
 		if (commasPos != 10 || isValidLineFormat(line.substr(0, commasPos), line.substr(commasPos + 1, line.length())) == false) {
 			oss << "Error at line " << i << ": format invalid, line format should be \"YYYY-MM-DD,VALUE\".";
 			throw InvalidDataBaseLineException(oss.str());
-		} else if (isValidDate(line.substr(0, 10)) == false) {
+		}
+		if (isValidDate(line.substr(0, 10)) == false) {
 			oss << "Error at line " << i << ": date invalid, date should be between 0001-01-01 and 9999-12-31.";
 			throw InvalidDataBaseLineException(oss.str());
-		} else if (isValidValue(line, commasPos) == false || line.substr(commasPos + 1, line.length()) == "-0") {
+		}
+
+		if (isValidValue(line, commasPos) == false || line.substr(commasPos + 1, line.length()) == "-0") {
 			oss << "Error at line " << i << ": price invalid, price should be between 0 and 2147483647.";
 			throw InvalidDataBaseLineException(oss.str());
-		} else if (this->_btcDataBase.find(line.substr(0, commasPos)) != this->_btcDataBase.end()) {
+		}
+
+		if (this->_btcDataBase.find(line.substr(0, commasPos)) != this->_btcDataBase.end()) {
 			oss << "Error at line " << i << ": date already exists.";
 			throw InvalidDataBaseLineException(oss.str());
 		}
+
 		this->_btcDataBase.insert(std::pair<std::string, double>(line.substr(0, commasPos), std::strtod(line.substr(commasPos + 1, line.size()).c_str(), NULL)));
 		i++;
 	}
@@ -88,7 +95,7 @@ void	BitcoinExchange::checkDataBase(std::ifstream& file)
 
 bool	BitcoinExchange::isValidLineFormat(std::string date, std::string value)
 {
-	if (date.length() != 10 || countOccurences(date, '-') != 2 || date.find('-') != 4 || date.find_last_of('-') != 7 || value.length() == 0)
+	if (date.length() != 10 || std::count(date.begin(), date.end(), '-') != 2 || date.find('-') != 4 || date.find_last_of('-') != 7 || value.length() == 0)
 		return false;
 	for (size_t i = 0; i < date.length(); i++)
 	{
@@ -186,8 +193,13 @@ void	BitcoinExchange::printAmount(std::ifstream& file)
 void	BitcoinExchange::checkInputLine(std::string& line)
 {
 	std::string _errorMsg;
-	std::string date = line.substr(0, 10);
-	std::string value = line.substr(13, line.length());
+	std::string date;
+	std::string value;
+
+	if (line.length() > 12) {
+		date = line.substr(0, 10);
+		value = line.substr(13, line.length());
+	}
 
 	if (line.length() < 10 || line.substr(10, 3) != " | " || isValidLineFormat(date, value) == false) {
 		_errorMsg = "Error: bad input => " + line.substr(0, line.length());
@@ -202,20 +214,13 @@ void	BitcoinExchange::checkInputLine(std::string& line)
 		throw InvalidInputLineException(_errorMsg);
 	}
 	if (isValidValue(line, 12) == false || value == "-0") {
-		_errorMsg = "Error: not a positive number.";
+		if (std::strtod(value.c_str(), NULL) >= 0)
+			_errorMsg = "Error: wrong value.";
+		else
+			_errorMsg = "Error: not a positive number.";
 		throw InvalidInputLineException(_errorMsg);
 	}
 	return ;
-}
-
-int	BitcoinExchange::countOccurences(std::string& line, char c)
-{
-	int	count = 0;
-
-	for (size_t i = 0; i < line.length(); i++)
-		if (line[i] == c)
-			count++;
-	return (count);
 }
 
 const char* InvalidFileException::what() const throw()
@@ -223,10 +228,18 @@ const char* InvalidFileException::what() const throw()
 	return ("Error: invalid file");
 }
 
+InvalidInputLineException::InvalidInputLineException(std::string& errorMsg): _errorMsg(errorMsg) {}
+
+InvalidInputLineException::~InvalidInputLineException() throw() {}
+
 const char* InvalidInputLineException::what() const throw()
 {
 	return _errorMsg.c_str();
 }
+
+InvalidDataBaseLineException::InvalidDataBaseLineException(const std::string& errorMsg) : _errorMsg(errorMsg) {}
+
+InvalidDataBaseLineException::~InvalidDataBaseLineException() throw() {}
 
 const char* InvalidDataBaseLineException::what() const throw()
 {

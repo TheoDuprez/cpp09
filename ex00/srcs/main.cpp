@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 13:07:51 by tduprez           #+#    #+#             */
-/*   Updated: 2024/01/16 13:51:44 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/02/14 14:33:05 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,16 +24,8 @@ int main(int ac, char **av)
 		std::ifstream file(av[1]);
 		if (!file.is_open())
 			throw InvalidFileException();
-		try {
-			BitcoinExchange exchange((std::string("data.csv")));
-			exchange.printAmount(file);
-		} catch(const InvalidDataBaseLineException& e) {
-			std::cout << e.what() << std::endl;
-			return (1); 
-		} catch (const InvalidFileException& e) {
-			std::cout << e.what() << std::endl;
-			return (1);
-		}
+		BitcoinExchange exchange((std::string("data.csv")));
+		exchange.printAmount(file);
 	} catch(const std::exception& e) {
 		std::cout << e.what() << std::endl;
 		return (1);

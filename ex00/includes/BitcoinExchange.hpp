@@ -6,7 +6,7 @@
 /*   By: tduprez <tduprez@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:03:22 by tduprez           #+#    #+#             */
-/*   Updated: 2024/02/12 15:56:34 by tduprez          ###   ########lyon.fr   */
+/*   Updated: 2024/02/14 14:34:02 by tduprez          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,15 +19,16 @@
 #include <map>
 #include <climits>
 #include <sstream>
+#include <algorithm>
 
 class BitcoinExchange
 {
 	private:
-		BitcoinExchange(void);
 		std::map<std::string, double> _btcDataBase;
+
+		BitcoinExchange(void);
 		void	checkDataBase(std::ifstream& file);
 		void	checkInputLine(std::string& line);
-		int		countOccurences(std::string& line, char c);
 		bool	isValidLineFormat(std::string date, std::string value);
 		bool	isLeapYear(int year);
 		bool	isValidDate(std::string date);
@@ -55,8 +56,8 @@ class InvalidInputLineException : public std::exception
 		std::string _errorMsg;
 
 	public:
-		InvalidInputLineException(std::string& errorMsg) : _errorMsg(errorMsg) {}
-		~InvalidInputLineException() throw() {}
+		InvalidInputLineException(std::string& errorMsg);
+		~InvalidInputLineException() throw();
 		virtual const char* what() const throw();
 };
 
@@ -66,8 +67,8 @@ class InvalidDataBaseLineException : public std::exception
 		const std::string _errorMsg;
 
 	public:
-		InvalidDataBaseLineException(const std::string& errorMsg) : _errorMsg(errorMsg) {}
-		~InvalidDataBaseLineException() throw() {}
+		InvalidDataBaseLineException(const std::string& errorMsg);
+		~InvalidDataBaseLineException() throw();
 		virtual const char* what() const throw();
 };
 
